@@ -13,7 +13,8 @@ $(function() {
       "iDisplayLength": 10,
       "language": {
         search: ""
-      }
+      },
+      
     });
     $('#dataTableExample').each(function() {
       var datatable = $(this);
@@ -35,7 +36,8 @@ $(function() {
       "iDisplayLength": 10,
       "language": {
         search: ""
-      }
+      },
+      
     });
     $('#dataTableExample2').each(function() {
       var datatable = $(this);

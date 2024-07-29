@@ -65,6 +65,6 @@
     <div class="key">M</div>
     
     <div class="key backspace">←</div>
-    <div class="key space">Space</div>
+    <div class="key space">space</div>
 
 </div>

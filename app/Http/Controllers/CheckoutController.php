@@ -13,6 +13,31 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
+    /**
+     * 
+     * add discount
+     */
+    public function addDiscountCheckout(Request $request)
+    {
+        $request->validate([
+            'discount_amount' => 'required'
+        ]);
+
+        $invoice = Invoice::find($request->invoice_id);
+        if ($invoice) {
+            $invoice->discount_amount = $request->discount_amount;
+            $invoice->update();
+            return redirect()->back()->with('success', 'discount applied');
+
+        }
+
+        return redirect()->back()->with('error', 'System error');
+    }
+
+
+
+
+    // TODO ensure you consider debit note and credit note
     public function checkoutPage($id, $account_id)
     {
         // personal booking
@@ -33,7 +58,8 @@ class CheckoutController extends Controller
                 }
                 $order->payment_receipts = $receipts;
                 $balance = $order->total  - $receipt_total;
-                $order->bal = $balance;
+                // minus discount from balance
+                $order->bal = $balance - $order->discount_amount;
                 // ORDER STATUS 
                 if ($receipt_total == $order->total) {
                     $order->st = 1;
@@ -45,7 +71,6 @@ class CheckoutController extends Controller
 
                 $booking->invoices->push($order);
             }
-            
             return view('bookings.checkout', compact('invoices', 'bankAccounts', 'booking'));
         }
     }
@@ -137,7 +162,7 @@ class CheckoutController extends Controller
                 $receiptTotal += $receipt->paid_amount;
             }
 
-            if ($receiptTotal == $invoice->total) {
+            if ($receiptTotal == ($invoice->total - $invoice->discount_amount)) {
                  // clear room
                 $bookingRooms = $booking->booking_items;
                 foreach ($bookingRooms as $key => $rm) {

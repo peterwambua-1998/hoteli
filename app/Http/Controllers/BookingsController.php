@@ -113,9 +113,6 @@ class BookingsController extends Controller
             $booking->day_id = $day->id;
             $booking->save();
 
-
-           
-
             $invoice_t = $this->calculateTax($package->price * $request->num_of_days * $request->pax);
 
             // create invoice here
@@ -276,8 +273,6 @@ class BookingsController extends Controller
                 $companyTotal += ($package->price + $childTotal) * $request->number_of_days;
             }
             // room details
-            
-
             $accountTotalTax = $this->calculateTax($accountTotal);
             $companyTotalTax = $this->calculateTax($companyTotal);
             // create invoice here

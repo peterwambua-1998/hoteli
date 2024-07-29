@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('amount');
             $table->integer('credit_note_amount')->nullable();
             $table->integer('debit_note_amount')->nullable();
+            $table->longText('message');
             // $table->boolean('printed')->default(1);
             $table->timestamps();
         });

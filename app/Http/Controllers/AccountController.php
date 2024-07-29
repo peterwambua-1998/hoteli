@@ -251,7 +251,7 @@ class AccountController extends Controller
 
             foreach ($invoiceItems as $item) {
                 $item_total = $item->amount;
-                // credit note is to add
+                // credit note is to minus
                 $creditNoteItem = CreditNoteItem::where('invoice_id','=', $invoice->id)
                 ->where('item_id','=', $item->item_id)->get();
 
@@ -267,7 +267,6 @@ class AccountController extends Controller
                     $item_total += $debitNote->amount;
                 }
 
-    
                 $invoiceTotal += $item_total;
             }
 

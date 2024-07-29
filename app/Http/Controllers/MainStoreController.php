@@ -330,4 +330,17 @@ class MainStoreController extends Controller
             return redirect()->back()->with('error', 'System error please try again');
         }
     }
+
+    public function transfer()
+    {
+        $products = Product::all();
+        foreach ($products as $key => $product) {
+            $store = new MainStore();
+            $store->item_id = $product->id;
+            $store->quantity = 100;
+            $store->save();
+        }
+
+        return response(1);
+    }
 }

@@ -70,6 +70,7 @@ class PackageController extends Controller
                     $packageItem->save();
                 }
             }
+            
             DB::commit();
 
             return redirect()->route('packages.index')->with('success', 'Package added successfully');

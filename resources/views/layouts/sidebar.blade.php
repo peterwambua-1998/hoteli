@@ -44,6 +44,13 @@
         </div>
       </li>
 
+      <li class="nav-item {{ active_class(['report-saves']) }} ">
+        <a href="{{ url('report-saves') }}" class="nav-link">
+          <ion-icon class="link-icon" name="home-outline" ></ion-icon>
+          <span class="link-title">Revenue</span>
+        </a>
+      </li>
+
       
 
       <li class="nav-item {{ active_class(['meal-plan']) }} {{ active_class(['booking']) }} {{ active_class(['packages']) }} {{ active_class(['rooms']) }} {{ active_class(['reservations']) }}">
@@ -113,6 +120,8 @@
           </ul>
         </div>
       </li>
+
+     
 
       <li class="
         nav-item 
@@ -289,12 +298,6 @@
               <li class="nav-item">
                 <a href="{{route('reservations.index')}}" class="nav-link {{ active_class(['reservations']) }}">Bookings</a>
               </li>
-              <li class="nav-item">
-                <a href="{{route('rooms.index')}}" class="nav-link {{ active_class(['rooms']) }}">Rooms</a>
-              </li>
-              <li class="nav-item">
-                <a href="{{route('meal-plan.index')}}" class="nav-link {{ active_class(['meal-plan']) }}">Meal Plans</a>
-              </li>
               
             </ul>
           </div>
@@ -304,6 +307,31 @@
           <a href="{{ url('accounts') }}" class="nav-link">
             <ion-icon class="link-icon" name="home-outline" ></ion-icon>
             <span class="link-title">Customers</span>
+          </a>
+        </li>
+
+        <li class="nav-item {{ active_class(['system/day']) }} {{ active_class(['collected/cash']) }}">
+          <a class="nav-link" data-bs-toggle="collapse" href="#day" role="button" aria-expanded="{{ is_active_route(['collected/cash']) }} {{ is_active_route(['system/day']) }}" aria-controls="day">
+            <ion-icon class="link-icon" name="person-outline"></ion-icon>
+            <span class="link-title">Days</span>
+            <i class="link-arrow" data-feather="chevron-down"></i>
+          </a>
+          <div class="collapse {{ show_class(['system/day']) }} {{ show_class(['collected/cash']) }}" id="day">
+            <ul class="nav sub-menu">
+              <li class="nav-item">
+                <a href="{{route('system.days.index')}}" class="nav-link {{ active_class(['system/day']) }}">Current Day</a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('collected.cash') }}" class="nav-link {{ active_class(['collected/cash']) }}">Previous Days</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="nav-item {{ active_class(['cashier-reports']) }}">
+          <a href="{{ route('cashier.reports') }}" class="nav-link">
+            <ion-icon class="link-icon" name="home-outline" ></ion-icon>
+            <span class="link-title">Account report</span>
           </a>
         </li>
       @endif

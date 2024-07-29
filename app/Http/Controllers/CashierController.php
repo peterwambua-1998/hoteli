@@ -23,6 +23,7 @@ class CashierController extends Controller
 {
     public function orders()
     {
+        $activeDay = Day::where('status','=',1)->orderBy('created_at')->first();
         $accounts = Account::all();
         $bankAccounts = BankAccount::all();
         $orders = Invoice::whereIn('pos_used', [1, 3, 4])->where('voided', '=', 0)->where('from_accommodation', '=', 0)->orderBy('created_at', 'desc')->get();
@@ -48,9 +49,7 @@ class CashierController extends Controller
             }
         }
 
-        
-
-        return view('cashier.orders', compact('orders', 'bankAccounts', 'accounts', 'totalOrder'));
+        return view('cashier.orders', compact('orders', 'bankAccounts', 'accounts'));
     }
 
     /**
@@ -82,6 +81,7 @@ class CashierController extends Controller
         $request->validate([
             'order_id' => 'required'
         ]);
+
         $invoice = Invoice::find($request->order_id);
         $booking = Booking::where('account_id', '=', $request->account_id)->where('status', '=', 1)->first();
 
@@ -93,7 +93,6 @@ class CashierController extends Controller
             } else {
                 return redirect()->back()->with('error', 'System error please try again!');
             }
-            
         } else {
             // package and complimentary
             if ($request->payment_method == 5 || $request->payment_method == 6) {
@@ -162,7 +161,7 @@ class CashierController extends Controller
                     $bankAccount->update();
                 }
             }
-            
+
 
             DB::commit();
             return 1;
@@ -191,14 +190,12 @@ class CashierController extends Controller
                         $receipt->account_id = $request->account_id;
                         $invoice->account_id = $request->account_id;
                         $invoice->update();
-
                     }
 
                     if ($paidBy == 2) {
                         $receipt->account_id = $booking->company_id;
                         $invoice->account_id = $request->account_id;
                         $invoice->update();
-
                     }
                 }
             }
@@ -221,13 +218,11 @@ class CashierController extends Controller
             DB::commit();
 
             return 1;
-
         } catch (\PDOException $th) {
             DB::rollBack();
 
             return 0;
         }
-        
     }
 
     /**
@@ -237,47 +232,54 @@ class CashierController extends Controller
     {
         DB::beginTransaction();
         try {
-            if ($booking->extras_paid_by == 1) {
-                $bookingInvoice = Invoice::where('booking_id', '=', $booking->id)->where('account_id', '=', $booking->account_id)->first();
-            }
-
-            if ($booking->extras_paid_by == 2) {
-                $bookingInvoice = Invoice::where('booking_id', '=', $booking->id)->where('account_id', '=', $booking->company_id)->first();
-            }
-
-            $invoiceItems = $invoice->items;
-
-            $receipts = $invoice->receipt;
-
-            $paidBy = $booking->extras_paid_by;
-
-            if ($bookingInvoice) {
-                foreach ($invoiceItems as $key => $item) {
-                    $item->invoice_id = $bookingInvoice->id;
-                    $item->update();
+            if ($booking) {
+                if ($booking->extras_paid_by == 1) {
+                    $bookingInvoice = Invoice::where('booking_id', '=', $booking->id)->where('account_id', '=', $booking->account_id)->first();
                 }
+
+                if ($booking->extras_paid_by == 2) {
+                    $bookingInvoice = Invoice::where('booking_id', '=', $booking->id)->where('account_id', '=', $booking->company_id)->first();
+                }
+
+
+                $invoiceItems = $invoice->items;
+
+                $receipts = $invoice->receipt;
+
+                $paidBy = $booking->extras_paid_by;
+
+                if ($bookingInvoice) {
+                    foreach ($invoiceItems as $key => $item) {
+                        $item->invoice_id = $bookingInvoice->id;
+                        $item->update();
+                    }
+                } else {
+                    return redirect()->back()->with('error', 'Please contact admin booking not found');
+                }
+
+                // recalculate totals
+                $bookingInvoiceItems = $bookingInvoice->items;
+                $totalAmt = 0;
+                foreach ($bookingInvoiceItems as $key => $item) {
+                    $totalAmt += $item->amount;
+                }
+
+                // calculate taxes
+                $bookingInvoiceTaxes = $this->calculateTax($totalAmt);
+
+                $bookingInvoice->sub_total = $bookingInvoiceTaxes['subTotal'];
+                $bookingInvoice->tax_amount = $bookingInvoiceTaxes['vat'];
+                $bookingInvoice->levy = $bookingInvoiceTaxes['levy'];
+                $bookingInvoice->total = $bookingInvoiceTaxes['total'];
+                $bookingInvoice->update();
+
+                $invoice->delete();
             } else {
-                return redirect()->back()->with('error', 'Please contact admin booking not found');
+                $invoice->account_id = $request->account_id;
+                $invoice->update();
+
+                // 
             }
-
-            // recalculate totals
-            $bookingInvoiceItems = $bookingInvoice->items;
-            $totalAmt = 0;
-            foreach ($bookingInvoiceItems as $key => $item) {
-                $totalAmt += $item->amount;
-            }
-
-            // calculate taxes
-            $bookingInvoiceTaxes = $this->calculateTax($totalAmt);
-
-            $bookingInvoice->sub_total = $bookingInvoiceTaxes['subTotal'];
-            $bookingInvoice->tax_amount = $bookingInvoiceTaxes['vat'];
-            $bookingInvoice->levy = $bookingInvoiceTaxes['levy'];
-            $bookingInvoice->total = $bookingInvoiceTaxes['total'];
-            $bookingInvoice->update();
-
-            $invoice->delete();
-
 
             DB::commit();
 

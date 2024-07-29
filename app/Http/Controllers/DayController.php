@@ -68,16 +68,29 @@ class DayController extends Controller
             'cash_collected' => 'required'
         ]);
 
-        $day = Day::find($request->day_id);
-        if ($day) {
+        DB::beginTransaction();
+
+        try {
+            $day = Day::find($request->day_id);
             $day->end_time = $request->end_time;
             $day->cash_collected = $request->cash_collected;
             $day->status = 0;
             $day->ended_by = Auth::user()->id;
-            if($day->update()) {
-                return redirect()->back()->with('success','Day ended successfully!');
-            }
+            $day->update();
+
+            $day = new Day();
+            $day->start_time = $request->end_time;
+            $day->started_by = Auth::user()->id;
+            $day->save();
+
+            DB::commit();
+
+            return redirect()->back()->with('success','Day ended successfully!');
+        } catch (\PDOException $th) {
+            DB::rollBack();
+            dd($th->getMessage());
             return redirect()->back()->with('error','System error please try again!');
+
         }
     }
 

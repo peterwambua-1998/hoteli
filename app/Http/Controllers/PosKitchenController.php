@@ -115,6 +115,8 @@ class PosKitchenController extends Controller
                 $inv_item->amount = $request->quantity[$i] * $product->price;
                 $inv_item->rate = $product->price;
                 $inv_item->days = 1;
+                $inv_item->message = $request->message[$i];
+
                 $inv_item->save();
 
                 // check if item has recipe and deduct each recipe item from kitchen store\
@@ -154,7 +156,7 @@ class PosKitchenController extends Controller
      */
     public function orders()
     {
-        $orders = Invoice::where('pos_used','=', 3)->where('user_id','=', Auth::user()->id)->get();
+        $orders = Invoice::where('pos_used','=', 3)->get();
         foreach ($orders as $key => $order) {
             $receipt_total = 0;
             $receipts = $order->receipt;
@@ -275,6 +277,7 @@ class PosKitchenController extends Controller
                     $inv_item->amount = $request->quantity[$i] * $product->price;
                     $inv_item->rate = $product->price;
                     $inv_item->days = 1;
+                    $inv_item->message = $request->message[$i];
                     $inv_item->save();
 
                     $p = new stdClass();
@@ -287,6 +290,8 @@ class PosKitchenController extends Controller
                     $p->rate = $product->price;
                     $p->days = 1;
                     $p->name = $product->name;
+                    $p->message = $request->message[$i];
+
 
                     $itemsToPrint->push($p);
 

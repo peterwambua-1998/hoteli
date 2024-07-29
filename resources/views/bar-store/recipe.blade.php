@@ -106,12 +106,12 @@
                     <tbody id="table-row">
                         <tr>
                             <td>
-                                <input type="text" required name="item_code[]" class="form-control item_code" readonly autocomplete="off">
+                                <input type="text" name="item_code[]" class="form-control item_code" readonly autocomplete="off">
                                 <input type="hidden" name="product_id[]" class="item_id" />
                             </td>
                             <td>
                                 <div style="width: 100%;">
-                                    <input type="text" required name="product_description[]" class="form-control item_description" autocomplete="off">
+                                    <input type="text" name="product_description[]" class="form-control item_description" autocomplete="off">
                                     <div class="outer-suggestion" style="position: relative; width: 100%; z-index: 100;">
                                         <div class="suggestion" style="position: absolute; background: #f9fafb; border-radius: 5px; color: black; border: 1px solid #94a3b8; width: 100%; padding: 8px;">
                                         </div>

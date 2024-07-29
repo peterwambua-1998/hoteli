@@ -28,5 +28,15 @@ class RoomTypeSeeder extends Seeder
             'type' => 'Deluxe',
         ]);
 
+        DB::table('room_types')->insert([
+            'id' => 4,
+            'type' => 'Deluxe Twin',
+        ]);
+
+        DB::table('room_types')->insert([
+            'id' => 5,
+            'type' => 'Conference Hall',
+        ]);
+
     }
 }

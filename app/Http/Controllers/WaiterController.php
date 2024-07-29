@@ -23,7 +23,7 @@ class WaiterController extends Controller
      */
     public function orders()
     {
-        $orders = Invoice::where('user_id','=', Auth::user()->id)->where('voided','=', 0)->orderBy('created_at', 'desc')->get();
+        $orders = Invoice::where('user_id','=', Auth::user()->id)->where('booking_id', '=', null)->where('voided','=', 0)->orderBy('created_at', 'desc')->get();
         foreach ($orders as $key => $order) {
             $receipt_total = 0;
             $receipts = $order->receipt;

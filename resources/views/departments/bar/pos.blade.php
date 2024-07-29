@@ -66,7 +66,7 @@
 
         </style>
 </head>
-<body >
+<body id="body">
     <div>
         <div class="grid grid-cols-6 absolute bottom-0 top-0 right-0 w-full">
             <div class="col-span-4 pl-2 pr-2 pt-2">
@@ -81,8 +81,8 @@
 
                 {{-- products --}}
                 <div class="h-[78vh] ">
-                    <div class="overflow-y-scroll  h-[40%] ">
-                        <div class="pr-6 w-full h-full grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 lg:gap-6" id="items">
+                    <div class="overflow-y-scroll  h-[90%] ">
+                        <div class="pr-6 w-full h-full grid md:grid-cols-2 lg:grid-cols-2 md:gap-4 lg:gap-6" id="items">
                             @foreach ($items as $item)
                             <div class="bg-[#f3f4f6] p-2 h-fit rounded-lg m-card font-medium">
                                 <input type="hidden" value="{{$item->id}}" class="item-id" />
@@ -104,31 +104,22 @@
                             @endforeach
                         </div>
                     </div>
-                    <div class="h-[60%]">
-                            <div class="w-full pr-6 ">
-                            @include('departments.bar.keyboard')
-
-                            </div>
-                    </div>
+                    
                 </div>
                 {{-- products --}}
             </div>
             <div class="col-span-2 w-[100%] bg-[#292524] pl-4 pr-4 relative">
                 {{-- order number --}}
                 {{-- order number --}}
-                {{-- buttons --}}
-                <div class="grid grid-cols-2 md:gap-4 lg:gap-6 mb-4 mt-2">
-                    
-                </div>
-                {{-- buttons --}}
+                
 
-                <div class="h-[40vh] bg-white p-2 rounded overflow-y-scroll" id="cart-content">
+                <div class="h-[70vh] bg-white p-2 rounded overflow-y-scroll mt-1" id="cart-content">
                     
                 </div>
 
-                <div class="absolute left-0 right-0 bottom-0 pl-4 pr-4 font-medium ">
+                <div class="absolute left-0 right-0 bottom-0 pl-4 pr-4 font-medium"  >
                     <div class="m-glass p-2 mb-2 rounded">
-                        <div class="border-b pb-2">
+                        <div class="border-b pb-2" style="display: none">
                             <div class="flex justify-between">
                                 <p>Sub Total</p> 
                                 <p>Ksh <span id="sub-total">0</span></p> 
@@ -158,6 +149,12 @@
         </div>
     </div>
 
+
+    
+    <div id="m-modals">
+
+    </div>
+
     
 
     {{-- receipt area --}}
@@ -169,11 +166,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script>
         let cartContent = {};
+        let activeInputField = null;
+
 
         function cart() {
             $('.item-add').each((index, element) => {
                 $(element).on('click', (e) => {
                     let parent = $(element).parent().parent();
+
                     let id = Number(parent.find('.item-id').val());
 
                     let itemAmount = parent.find('.item-amount');
@@ -188,7 +188,8 @@
                             'price': price,
                             'currentCardCount': currentCardCount,
                             'parent': parent,
-                            'taxable': taxable
+                            'taxable': taxable,
+                            'message': '',
                         }
                         cartContent[id] = data;
                         itemAmount.text(currentCardCount);
@@ -201,6 +202,8 @@
                     console.log(cartContent);
                 });
             });
+
+            
 
             $('.item-subtract').each((index, element) => {
                 $(element).on('click', (e) => {
@@ -219,6 +222,7 @@
                             content.currentCardCount -= 1;
                             if (content.currentCardCount == 0) {
                                 cartContent[id].currentCardCount =  0;
+                                cartContent[id].message =  '';
                                 itemAmount.text(0);
                             } else {
                                 itemAmount.text(content.currentCardCount);
@@ -230,28 +234,40 @@
             });
         }
 
+       
+
         function cartContentDisplay(cartContent) {
             let template = '';
+            let modals = '';
             for (const property in cartContent) {
                 let content = cartContent[property];
                 let count = content.currentCardCount;
                 let name = content.name;
                 let price = content.price;
+                let message = content.message;
                 console.log(`${property}: ${cartContent[property]}`);
                 if (count > 0) {
                     template += `
-                        <div class="bg-slate-300 p-2 flex justify-between items-center mb-4 rounded">
-                            <div class="flex items-center gap-2">
-                                <p class="rounded-full bg-white pl-2 pr-2 text-center">${count}</p>
-                                <p>${name}</p>
+                        <div class="bg-slate-300 mb-3 ">
+                            <div class="p-2 flex justify-between items-center mb-3 rounded" >
+                                <div class="flex items-center gap-2">
+                                    <p class="rounded-full bg-white pl-2 pr-2 text-center">${count}</p>
+                                    <p>${name}</p>
+                                </div>
+                                <p>Ksh ${price}</p>
                             </div>
-                            <p>Ksh ${price}</p>
+                            <div class="w-full p-2">
+                                <input id="order-message-${property}" value="${message}" placeholder="Enter order message here..." class="message bg-white w-full p-2" onInput="orderMessage(${property})" />
+                            </div>
                         </div>
                     `;  
                 }
-            }
 
+                
+            }
             $('#cart-content').html(template);
+            mm();
+           
             calulateTotal(cartContent);
         }
 
@@ -276,7 +292,6 @@
                     sub_total += amount;
                     total += amount;
                 }
-                    
             }
 
             sub_total = Number(sub_total / 1.16).toFixed(2);
@@ -290,6 +305,23 @@
             $('#levy').text(levy);
             $('#sub-total').text(Number(sub_total_display).toFixed(2));
             $('#total').text(t);
+        }
+
+
+        function mm () {
+            const elements = document.querySelectorAll('.message');
+            elements.forEach((element, index) => {
+            
+                element.addEventListener('focus', () => {
+                    console.log('peter');
+                    setActiveInputField(element);
+                });
+
+                element.addEventListener('input', () => {
+                    console.log('Input 2 changed:', element.value);
+                });
+            })
+           
         }
 
         $('#search-input').on('input', (e) => {
@@ -323,7 +355,7 @@
                                 <input type="hidden" value="${element.id}" class="item-id" />
                                 <div class="grid grid-cols-4 mb-6">
                                     <div class="col-span-3">
-                                        <p class="item-name text-sm">${element.name}</p>
+                                        <p class="item-name text-md">${element.name}</p>
                                         <p>Ksh <span class="item-price">${element.price}</span></p>
                                         <input  type="hidden" class="taxable" value="${element.taxable}" />
                                     </div>
@@ -332,8 +364,8 @@
                                     </div>
                                 </div>
                                 <div>
-                                <button class="bg-[#A97B3B] w-full pt-2 pb-2 rounded text-white mb-6 item-add text-sm">Add</button>
-                                    <button class="bg-[#FFFFFF] w-full pt-2 pb-2 rounded text-black item-subtract text-sm">Subtract</button>
+                                <button class="bg-[#A97B3B] w-full pt-4 pb-4 rounded text-white mb-6 item-add text-sm">Add</button>
+                                    <button class="bg-[#FFFFFF] w-full pt-4 pb-4 rounded text-black item-subtract text-sm">Subtract</button>
                                 </div>
                             </div>
                         `
@@ -381,11 +413,10 @@
                             data.append('price[]', content.price);
                             data.append('quantity[]', content.currentCardCount);
                             data.append('item_id[]', property);
+                            data.append('message[]', content.message);
                         }
                     }
                 }
-
-
                 $.ajax({
                     url: '{{route("bar.order.store")}}',
                     type: 'POST',
@@ -400,7 +431,7 @@
                         console.log(response);
                         if (response.status == 1) {
                             // window.open(`http://127.0.0.1:8000/bar-store/orders/${response.order_id}/print`, '_blank')
-                            // window.location.href = '/waiter/orders';
+                            // 
 
                             // print invoice
                             var createdAt = response.order.created_at; // Assuming you passed the data to the view
@@ -416,11 +447,14 @@
 
                             for (let i = 0; i < response.items.length; i++) {
                                 let element = response.items[i];
+                                let m = '';
+                                    if (element.message) {
+                                        m = element.message;
+                                    }
                                 let template = `
                                 <tr class="order-content-receipt">
-                                    <td >${element.item_description}</td>
+                                    <td >${element.item_description} - ${m}</td>
                                     <td>${element.quantity}</td>
-                                   
                                 </tr>
                                 `;
 
@@ -438,6 +472,7 @@
 
                             // clear order
                             clearPos();
+
                         } else {
                             // show alert for day not added
                         }
@@ -448,21 +483,27 @@
 
         cart();
 
+        
         const keys = document.querySelectorAll('.key');
-        const inputField = document.getElementById('search-input');
+        const inputField1 = document.getElementById('search-input');
+        inputField1.addEventListener('focus', () => {
+            setActiveInputField(inputField1);
+        });
 
         keys.forEach(key => {
             key.addEventListener('click', () => {
+                if (!activeInputField) return;
                 if (key.textContent === '←') {
-                    inputField.value = inputField.value.slice(0, -1);
-                } else if (key.classList.contains('space')) {
-                    inputField.value += ' ';
-                } else {
-                    inputField.value += key.textContent;
+                    activeInputField.value = activeInputField.value.slice(0, -1);
+                }else if (key.classList.contains('space')) {
+                    activeInputField.value += ' ';
+            } else {
+                    activeInputField.value += key.textContent;
                 }
-                triggerInputEvent(inputField);
+                triggerInputEvent(activeInputField);
             });
         });
+
 
         $.fn.extend({
             print: function() {
@@ -473,7 +514,11 @@
                     doc = window.frames[frameName];
                 }
                 doc.document.body.innerHTML = this.html();
+                doc.window.onafterprint = function(){
+                    window.location.href = '/waiter/orders';
+                }
                 doc.window.print();
+                
                 return this;
             }
         });
@@ -485,6 +530,24 @@
             });
             element.dispatchEvent(event);
         }
+
+        
+
+        function setActiveInputField(inputField) {
+            if (activeInputField) {
+                activeInputField.classList.remove('input-field-active');
+            }
+            activeInputField = inputField;
+            activeInputField.classList.add('input-field-active');
+            console.log(activeInputField);
+        }
+
+        function orderMessage(id)
+        {
+            let message = $(`#order-message-${id}`).val();
+            cartContent[id].message = message;
+        }
+
     </script>
 </body>
 </html>

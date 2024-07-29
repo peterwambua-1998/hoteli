@@ -98,7 +98,7 @@
                             </td>
                             <td>
                                 <?php
-                                $date = date_format(date_create("$order->created_at"),"Y/m/d H:i:s");
+                                $date = date_format(date_create("$order->created_at"),"g:i A  (l)");
                                 ?>
                                 {{$date}}
                             </td>
@@ -177,6 +177,7 @@
            
             $('#dataTableExample').DataTable({
                 language: { searchPlaceholder: "Search records", search: "",},
+                "ordering": false
             });
 
             // $.ajax({

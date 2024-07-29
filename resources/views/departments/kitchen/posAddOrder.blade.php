@@ -80,14 +80,14 @@
 
                 {{-- products --}}
                 <div class="h-[78vh]  ">
-                    <div class="overflow-y-scroll  h-[40%] ">
-                        <div class="pr-6 w-full h-full grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 lg:gap-6" id="items">
+                    <div class="overflow-y-scroll  h-[90%] ">
+                        <div class="pr-6 w-full h-full grid md:grid-cols-2 lg:grid-cols-2 md:gap-4 lg:gap-6" id="items">
                             @foreach ($items as $item)
                             <div class="bg-[#f3f4f6] p-2 h-fit rounded-lg m-card font-medium">
                                 <input type="hidden" value="{{$item->id}}" class="item-id" />
                                 <div class="grid grid-cols-4 mb-6">
                                     <div class="col-span-3">
-                                        <p class="item-name text-sm">{{$item->name}}</p>
+                                        <p class="item-name text-md">{{$item->name}}</p>
                                         <p>Ksh <span class="item-price">{{$item->price}}</span></p>
                                         <input  type="hidden" class="taxable" value="{{$item->taxable}}" />
                                     </div>
@@ -96,18 +96,14 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button class="bg-[#A97B3B] w-full pt-2 pb-2 rounded text-white mb-6 item-add text-sm">Add</button>
-                                    <button class="bg-[#FFFFFF] w-full pt-2 pb-2 rounded text-black item-subtract text-sm">Subtract</button>
+                                    <button class="bg-[#A97B3B] w-full pt-4 pb-4 rounded text-white mb-6 item-add text-sm">Add</button>
+                                    <button class="bg-[#FFFFFF] w-full pt-4 pb-4 rounded text-black item-subtract text-sm">Subtract</button>
                                 </div>
                             </div>
                             @endforeach
                         </div>
                     </div>
-                    <div class="h-[60%]">
-                        <div class="w-full pr-6 ">
-                            @include('departments.bar.keyboard')
-                        </div>
-                    </div>
+                    
                 </div>
                 {{-- products --}}
             </div>
@@ -115,19 +111,14 @@
                 {{-- order number --}}
                 {{-- order number --}}
                 {{-- buttons --}}
-                <div class="grid grid-cols-2 md:gap-4 lg:gap-6 mb-4 mt-2">
-                    {{-- <button class="bg-[#A97B3B] text-white pt-2 pb-2 rounded" data-modal-target="customer-modal" data-modal-toggle="customer-modal">Add Customer</button> --}}
-                    {{-- <button data-modal-target="default-modal" data-modal-toggle="default-modal" class="bg-[#3B623D] text-white pt-2 pb-2 rounded"><span class="pr-4">Table</span> <i class="fa-solid fa-pencil"></i></button> --}}
-                </div>
-                {{-- buttons --}}
-
-                <div class="h-[40vh] bg-white p-2 rounded overflow-y-scroll" id="cart-content">
+               
+                <div class="h-[70vh] bg-white p-2 rounded overflow-y-scroll" id="cart-content">
                     
                 </div>
 
                 <div class="absolute left-0 right-0 bottom-0 pl-4 pr-4 font-medium ">
                     <div class="m-glass p-2 mb-2 rounded">
-                        <div class="border-b pb-2">
+                        <div class="border-b pb-2" style="display: none;">
                             <div class="flex justify-between">
                                 <p>Sub Total</p> 
                                 <p>Ksh <span id="sub-total">0</span></p> 
@@ -170,6 +161,7 @@
        
 
         let cartContent = {};
+        let activeInputField = null;
         
 
         function cart() {
@@ -190,7 +182,8 @@
                             'price': price,
                             'currentCardCount': currentCardCount,
                             'parent': parent,
-                            'taxable': taxable
+                            'taxable': taxable,
+                            'message': '',
                         }
                         cartContent[id] = data;
                         itemAmount.text(currentCardCount);
@@ -214,6 +207,7 @@
                             content.currentCardCount -= 1;
                             if (content.currentCardCount == 0) {
                                 content.currentCardCount =  0;
+                                cartContent[id].message =  '';
                                 itemAmount.text(0);
                             } else {
                                 itemAmount.text(content.currentCardCount);
@@ -233,21 +227,29 @@
                 let count = content.currentCardCount;
                 let name = content.name;
                 let price = content.price;
+                let message = content.message;
                 console.log(`${property}: ${cartContent[property]}`);
                 if (count > 0) {
                     template += `
-                        <div class="bg-slate-300 p-2 flex justify-between items-center mb-4 rounded">
+                    <div class="bg-slate-300 mb-3">
+                        <div class=" p-2 flex justify-between items-center mb-3 rounded">
                             <div class="flex items-center gap-2">
                                 <p class="rounded-full bg-white pl-2 pr-2 text-center">${count}</p>
                                 <p>${name}</p>
                             </div>
                             <p>Ksh ${price}</p>
                         </div>
+                         <div class="w-full p-2">
+                            <input id="order-message-${property}" value="${message}" placeholder="Enter order message here..." class="p-2 message bg-white w-full" onInput="orderMessage(${property})" />
+                        </div>
+                        </div>
                     `;  
                 }
             }
 
             $('#cart-content').html(template);
+            mm();
+
             calulateTotal(cartContent);
         }
 
@@ -289,6 +291,23 @@
             $('#total').text(t);
         }
 
+
+        function mm () {
+            const elements = document.querySelectorAll('.message');
+            elements.forEach((element, index) => {
+            
+                element.addEventListener('focus', () => {
+                    console.log('peter');
+                    setActiveInputField(element);
+                });
+
+                element.addEventListener('input', () => {
+                    console.log('Input 2 changed:', element.value);
+                });
+            })
+           
+        }
+
         $('#search-input').on('input', (e) => {
             let value = e.target.value;
 
@@ -320,7 +339,7 @@
                                 <input type="hidden" value="${element.id}" class="item-id" />
                                 <div class="grid grid-cols-4 mb-6">
                                     <div class="col-span-3">
-                                        <p class="item-name text-sm">${element.name}</p>
+                                        <p class="item-name text-md">${element.name}</p>
                                         <p>Ksh <span class="item-price">${element.price}</span></p>
                                         <input  type="hidden" class="taxable" value="${element.taxable}" />
                                     </div>
@@ -329,8 +348,8 @@
                                     </div>
                                 </div>
                                 <div>
-                                <button class="bg-[#A97B3B] w-full pt-2 pb-2 rounded text-white mb-6 item-add text-sm">Add</button>
-                                    <button class="bg-[#FFFFFF] w-full pt-2 pb-2 rounded text-black item-subtract text-sm">Subtract</button>
+                                <button class="bg-[#A97B3B] w-full pt-4 pb-4 rounded text-white mb-6 item-add text-sm">Add</button>
+                                    <button class="bg-[#FFFFFF] w-full pt-4 pb-4 rounded text-black item-subtract text-sm">Subtract</button>
                                 </div>
                             </div>
                         `
@@ -363,6 +382,8 @@
                             data.append('price[]', content.price);
                             data.append('quantity[]', content.currentCardCount);
                             data.append('item_id[]', property);
+                            data.append('message[]', content.message);
+
                         }
                     }
                 }
@@ -393,9 +414,13 @@
 
                             for (let i = 0; i < response.itemToPrint.length; i++) {
                                 let element = response.itemToPrint[i];
+                                let m = '';
+                                    if (element.message) {
+                                        m = element.message;
+                                    }
                                 let template = `
                                 <tr class="order-content-receipt">
-                                    <td >${element.item_description}</td>
+                                    <td >${element.item_description} - ${m}</td>
                                     <td>${element.quantity}</td>
                                 </tr>
                                 `;
@@ -439,6 +464,9 @@
                     doc = window.frames[frameName];
                 }
                 doc.document.body.innerHTML = this.html();
+                doc.window.onafterprint = function(){
+                    window.location.href = '/waiter/orders';
+                }
                 doc.window.print();
                 return this;
             }
@@ -446,16 +474,22 @@
 
 
         const keys = document.querySelectorAll('.key');
-        const inputField = document.getElementById('search-input');
+        const inputField1 = document.getElementById('search-input');
+        inputField1.addEventListener('focus', () => {
+            setActiveInputField(inputField1);
+        });
 
         keys.forEach(key => {
             key.addEventListener('click', () => {
+                if (!activeInputField) return;
                 if (key.textContent === '←') {
-                    inputField.value = inputField.value.slice(0, -1);
-                } else {
-                    inputField.value += key.textContent;
+                    activeInputField.value = activeInputField.value.slice(0, -1);
+                } else if (key.classList.contains('space')) {
+                    activeInputField.value += ' ';
+            } else {
+                    activeInputField.value += key.textContent;
                 }
-                triggerInputEvent(inputField);
+                triggerInputEvent(activeInputField);
             });
         });
 
@@ -465,6 +499,21 @@
                 cancelable: true,
             });
             element.dispatchEvent(event);
+        }
+
+        function setActiveInputField(inputField) {
+            if (activeInputField) {
+                activeInputField.classList.remove('input-field-active');
+            }
+            activeInputField = inputField;
+            activeInputField.classList.add('input-field-active');
+            console.log(activeInputField);
+        }
+
+        function orderMessage(id)
+        {
+            let message = $(`#order-message-${id}`).val();
+            cartContent[id].message = message;
         }
     </script>
 </body>

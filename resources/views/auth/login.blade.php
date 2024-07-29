@@ -57,7 +57,7 @@
 <div class="page-content">
   
   <div class="row w-100 auth-page">
-    <div class="col-md-6 col-xl-6">
+    <div class="col-md-8 col-xl-8 mx-auto">
       <div class="card">
         <div class="row">
           <div class="col-md-4 pe-md-0">
@@ -71,22 +71,22 @@
                 <span style="color:green;font-weight:bold">Kisimani Eco Resort & Spa Ltd</span>
               </a>
               <h5 class="text-muted fw-normal mb-4">Welcome back! Log in to your account.</h5>
-              <form class="forms-sample" method="POST" action="{{ route('login') }}">
+              <form class="forms-sample" method="POST" action="{{ route('my-login') }}">
                 @csrf
 
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                   <label for="userEmail" class="form-label">Email address</label>
-                  <input type="email" autocomplete="off" class="form-control" id="userEmail" placeholder="Email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                  <input type="email" autocomplete="off" class="form-control" id="userEmail" placeholder="Email" name="email" value="{{ old('email') }}"  autocomplete="email" autofocus>
                   @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-                </div>
+                </div> --}}
                 <div class="mb-3">
                   <label for="userPassword" class="form-label">Password</label>
                   <div class="password-input">
-                    <input type="password" class="form-control" placeholder="Password" name="password" required autocomplete="current-password" id="myInput">
+                    <input type="text" class="form-control form-control-lg" placeholder="Password" name="password" required autocomplete="off" id="myInput">
                     <span class="eye-icon">
                       <ion-icon name="eye" id="view-password"></ion-icon>
                       <ion-icon name="eye-off-outline" id="hide-password"></ion-icon>
@@ -100,19 +100,17 @@
                   @enderror
                 </div>
                 <div>
-                  <button type="submit" style="background:green; color: white;" class="btn me-2 mb-2 mb-md-0"><ion-icon name="log-in-outline" style="font-size: 16px;  position: relative; top: 3px; right: 5px;"></ion-icon> Login</a>
+                  <button type="submit" style="background:green; color: white; font-size: 18px;" class="btn mt-5 p-5 me-2 mb-2 mb-md-0"><ion-icon name="log-in-outline" style="font-size: 16px;  position: relative; top: 3px; right: 5px;"></ion-icon> Login</a>
                  
                 </div>
-                <a href="{{ url('/password/reset') }}" class="d-block mt-3 text-muted">Forgot Password?</a>
+                
               </form>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="col-md-6 col-xl-6">
-      @include('auth.keyboard')
-    </div>
+    
   </div>
 </div>
 

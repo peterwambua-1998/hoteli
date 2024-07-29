@@ -41,10 +41,11 @@ return new class extends Migration
             $table->integer('cleared_by')->nullable();
 
             // discount
-            $table->double('discount_amount')->nullable();
+            $table->double('discount_amount')->default(0);
             
             // day
             $table->unsignedBigInteger('day_id')->nullable();
+
             $table->timestamps();
         });
     }

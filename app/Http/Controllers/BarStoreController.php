@@ -106,14 +106,15 @@ class BarStoreController extends Controller
             $store->quantity = $request->item_quantity;
             $store->save();
 
-
-            for ($i = 0; $i < count($request->product_id); $i++) {
-                $recipe = new Recipe();
-                $recipe->item_id = $item->id;
-                $recipe->product_id = $request->product_id[$i];
-                $recipe->quantity = $request->product_quantity[$i];
-                $recipe->user_id = Auth::user()->id;
-                $recipe->save();
+            if (count($request->product_id) > 0) {
+                for ($i = 0; $i < count($request->product_id); $i++) {
+                    $recipe = new Recipe();
+                    $recipe->item_id = $item->id;
+                    $recipe->product_id = $request->product_id[$i];
+                    $recipe->quantity = $request->product_quantity[$i];
+                    $recipe->user_id = Auth::user()->id;
+                    $recipe->save();
+                }
             }
 
             DB::commit();

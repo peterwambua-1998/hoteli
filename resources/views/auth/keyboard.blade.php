@@ -10,7 +10,7 @@
     } */
     .keyboard {
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 10px;
         padding: 10px;
         background-color: #ffffff;
@@ -19,8 +19,8 @@
         width: 100%;
     }
     .key {
-        width: 70px;
-        height: 50px;
+        width:90%;
+        height: 100px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -45,32 +45,6 @@
 </style>
 
 <div class="keyboard">
-    <div class="key">a</div>
-    <div class="key">b</div>
-    <div class="key">c</div>
-    <div class="key">d</div>
-    <div class="key">e</div>
-    <div class="key">f</div>
-    <div class="key">g</div>
-    <div class="key">h</div>
-    <div class="key">i</div>
-    <div class="key">j</div>
-    <div class="key">k</div>
-    <div class="key">l</div>
-    <div class="key">m</div>
-    <div class="key">n</div>
-    <div class="key">o</div>
-    <div class="key">P</div>
-    <div class="key">q</div>
-    <div class="key">r</div>
-    <div class="key">s</div>
-    <div class="key">t</div>
-    <div class="key">u</div>
-    <div class="key">v</div>
-    <div class="key">w</div>
-    <div class="key">x</div>
-    <div class="key">y</div>
-    <div class="key">z</div>
     <div class="key">0</div>
     <div class="key">1</div>
     <div class="key">2</div>
@@ -81,8 +55,6 @@
     <div class="key">7</div>
     <div class="key">8</div>
     <div class="key">9</div>
-    <div class="key">@</div>
-    <div class="key">.</div>
     <div class="key backspace">←</div>
 </div>
 
@@ -92,13 +64,8 @@
     const inputField2 = document.getElementById('myInput');
     let activeInputField = null;
 
-    inputField1.addEventListener('focus', () => {
-        setActiveInputField(inputField1);
-    });
+    console.log(inputField2);
 
-    inputField2.addEventListener('focus', () => {
-        setActiveInputField(inputField2);
-    });
 
     function setActiveInputField(inputField) {
         if (activeInputField) {
@@ -121,21 +88,21 @@
             if (!activeInputField) return;
             if (key.textContent === '←') {
                 activeInputField.value = activeInputField.value.slice(0, -1);
-            } else {
+            } else if (key.classList.contains('space')) {
+                    inputField.value += ' ';
+            }else {
                 activeInputField.value += key.textContent;
             }
             triggerInputEvent(activeInputField);
         });
     });
 
-    inputField1.addEventListener('input', () => {
-        console.log('Input 1 changed:', inputField1.value);
-    });
+    
 
     inputField2.addEventListener('input', () => {
         console.log('Input 2 changed:', inputField2.value);
     });
 
     // Initially set the first input field as active
-    setActiveInputField(inputField1);
+    setActiveInputField(inputField2);
 </script>

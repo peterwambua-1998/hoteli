@@ -12,6 +12,7 @@ use App\Http\Controllers\BillReceiptController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingsController;
 use App\Http\Controllers\CashierController;
+use App\Http\Controllers\CashierReports;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CreditNoteController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\LpoController;
 use App\Http\Controllers\MainStoreController;
 use App\Http\Controllers\MaintenanceStoreController;
 use App\Http\Controllers\MealPlanController;
+use App\Http\Controllers\MLoginController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PosBarController;
 use App\Http\Controllers\PosKitchenController;
@@ -50,6 +52,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WaiterController;
 use App\Http\Controllers\WithholdingTaxController;
 use App\Models\FrontOfficeStore;
+use App\Models\Room;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -115,6 +118,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/reservation/invoice/print/{id}', [CheckoutController::class, 'print'])->name('reservation.invoice.print');
     Route::post('/reservation/invoice/pay', [CheckoutController::class, 'payOrder'])->name('reservation.invoice.pay');
     Route::post('/checkout-under-company', [CheckoutController::class, 'checkoutUnderCompany'])->name('checkout.under.company');
+    Route::post('/reservation/discount', [CheckoutController::class, 'addDiscountCheckout'])->name('reservation.discount');
 
     // check in express guest
     Route::get('/checkin', [BookingsController::class, 'createBooking'])->name('checkin.create');
@@ -300,6 +304,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/order/pay', [CashierController::class, 'payOrder'])->name('cashier.orders.pay');
     Route::post('/order/void', [CashierController::class, 'voidOrder'])->name('cashier.orders.void');
     Route::get('/cash-orders', [CashierController::class, 'systemCash'])->name('cash.orders');
+    Route::get('/cashier-reports', [CashierReports::class, 'accountSales'])->name('cashier.reports');
 
     // reservation
     Route::get('/booking', [ReservationController::class, 'index'])->name('b.index');
@@ -367,5 +372,15 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     // reports
+    Route::get('/dept-sales', [HomeController::class, 'invoicePosting'])->name('dept.sales');
     Route::get('/account-cash-flows', [HomeController::class, 'cashInflows'])->name('cashflows');
+
+    // transfer to main store
+    Route::get('/main-transfer', [MainStoreController::class, 'transfer']);
+    Route::get('/report-saves', [HomeController::class, 'salesPerDay']);
+    Route::post('/account-cash-flows/query', [HomeController::class, 'salesPerDayQuery'])->name('cashflows.query');
+
 });
+
+Route::post('/my-login', [MLoginController::class, 'authenticate'])->name('my-login');
+

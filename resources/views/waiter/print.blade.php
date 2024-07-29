@@ -158,9 +158,9 @@
             
                 @foreach ($invoice->items as $item)
                 <tr>
-                    <td >{{$item->item->name}}</td>
+                    <td >{{$item->item_description}}</td>
                     <td>{{$item->quantity}}</td>
-                    <td class="price">{{$item->item->price}}</td>
+                    <td class="price">{{$item->rate}}</td>
                     <td class="price">{{$item->amount}}</td>
                 </tr>
                 @endforeach

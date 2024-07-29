@@ -22,7 +22,6 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $captain = Booking::where('status', '=', 1)->orderBy('created_at', 'desc')->get();
         $customers = Account::all();
         foreach ($captain as $key => $booking) {
             // details
@@ -35,6 +34,7 @@ class BookingController extends Controller
         return view('bookings.index', compact('captain', 'customers',));
     }
 
+   
     /**
      * create reservation
      */
@@ -330,4 +330,21 @@ class BookingController extends Controller
             return redirect()->back()->with('error', 'system error please try again!');
         }
     }
+
+
+    // public function index()
+    // {
+    //     $captain = Booking::where('status', '=', 1)->orderBy('created_at', 'desc')->get();
+    //     $customers = Account::all();
+    //     foreach ($captain as $key => $booking) {
+    //         // details
+    //         $booking['rooms'] = '';
+    //         $details = BookingDetail::where('booking_id', '=', $booking->id)->get();
+    //         foreach ($details as $key => $detail) {
+    //             $booking['rooms'] .= " {$detail->room->description} {$detail->room->number} ";
+    //         }
+    //     }
+    //     return view('bookings.index', compact('captain', 'customers',));
+    // }
+
 }

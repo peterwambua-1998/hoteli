@@ -79,6 +79,7 @@
                 @if ($booking->invoices->count() > 0)
                     @foreach ($booking->invoices as $invoice)
                     <div>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#discount-{{$invoice->id}}">Add Discount</button>
                         <button class="btn btn-info" onclick="$('#print-area').print();">Print</button>
                         <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#pay-{{$invoice->id}}">Receive Payment</a>
                         
@@ -552,6 +553,37 @@
         </div>
     </div>
 </div>
+
+
+@if ($booking->invoices->count() > 0)
+@foreach ($booking->invoices as $invoice)
+<div class="modal fade" id="discount-{{$invoice->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <form action="{{route('reservation.discount')}}" method="post">
+        @csrf
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Discount</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="discount_amount" class="form-label">Amount</label>
+                        <input type="text" required name="discount_amount" class="form-control" id="discount_amount" autocomplete="off" placeholder="Discount">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="invoice_id" value="{{$invoice->id}}">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>  
+        </div>
+    </form>
+</div>
+@endforeach
+@endif
+
 
 @if ($booking->invoices->count() > 0)
     @include('bookings.receipt')

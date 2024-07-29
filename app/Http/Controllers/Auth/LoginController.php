@@ -45,7 +45,6 @@ class LoginController extends Controller
         }
 
 
-
         if (Auth::user()->role == '5') {
             return redirect()->route('reservations.index');
         }

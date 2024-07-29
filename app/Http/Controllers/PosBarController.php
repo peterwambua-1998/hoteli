@@ -114,6 +114,7 @@ class PosBarController extends Controller
                 $inv_item->amount = $request->quantity[$i] * $product->price;
                 $inv_item->rate = $product->price;
                 $inv_item->days = 1;
+                $inv_item->message = $request->message[$i];
                 $inv_item->save();
 
                 // check if item has recipe and deduct each recipe item from kitchen store\
@@ -150,7 +151,7 @@ class PosBarController extends Controller
      */
     public function orders()
     {
-        $orders = Invoice::where('pos_used','=', 1)->where('user_id','=', Auth::user()->id)->where('voided','=', 0)->orderBy('created_at', 'desc')->get();
+        $orders = Invoice::where('pos_used','=', 1)->where('voided','=', 0)->orderBy('created_at', 'desc')->get();
         foreach ($orders as $key => $order) {
             $receipt_total = 0;
             $receipts = $order->receipt;
@@ -269,6 +270,8 @@ class PosBarController extends Controller
                     $inv_item->quantity = $request->quantity[$i];
                     $inv_item->amount = $request->quantity[$i] * $product->price;
                     $inv_item->rate = $product->price;
+                    $inv_item->message = $request->message[$i];
+
                     $inv_item->days = 1;
                     $inv_item->save();
 
@@ -283,6 +286,7 @@ class PosBarController extends Controller
                     $p->rate = $product->price;
                     $p->days = 1;
                     $p->name = $product->name;
+                    $p->message = $request->message[$i];
 
                     $itemsToPrint->push($p);
 
